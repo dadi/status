@@ -1,36 +1,10 @@
-# DADI Status
+DADI is a data centric development and delivery stack, built specifically in support of the principles of API first and COPE.
 
-![Build Status](http://img.shields.io/badge/Release-1.2.2-green.svg?style=flat-square)&nbsp;![Coverage](https://img.shields.io/badge/Coverage-89%-yellow.svg?style=flat-square)
-
-## Overview
-
-It is part of DADI, a suite of components covering the full development stack, built for performance and scale.
-
-## Usage
-
-```
-var dadiStatus = require('@dadi/status');
-
-var params = {
-	version: 'x.x.x',
-	requestLink: 'http://127.0.0.1:3000',
-	authorization: 'Bearer 123abcdef',
-	healthRoutes: [],
-	healthTimeLimit: 100,
-	pkgName: '@dadi/api'
-};
-dadiStatus(params, function(error, data) {
-	console.log(data);
-});
-```
-
-## Licence
-
-Copyright notice<br />
+Copyright notice
 (C) 2016 DADI+ Limited <support@dadi.tech><br />
 All rights reserved
 
-This product is part of DADI.<br />
+This product is part of DADI.
 DADI is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as
 published by the Free Software Foundation; either version 2 of
@@ -50,7 +24,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 The GNU General Public License (GPL) is available at
-http://www.gnu.org/copyleft/gpl.html.<br />
+http://www.gnu.org/copyleft/gpl.html.
 A copy can be found in the file GPL distributed with
 these files.
 

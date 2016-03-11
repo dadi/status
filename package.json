@@ -1,0 +1,29 @@
+{
+  "name": "@dadi/status",
+  "version": "1.0.0",
+  "dependencies": {
+    "async": "^1.4.2",
+    "underscore": "~1.8.0",
+    "underscore.string": "^3.2.2",
+    "latest-version": "~2.0.0",
+    "request": "~2.67.0"
+  },
+  "devDependencies": {
+    "env-test": "^1.0.0",
+    "mocha": "~1.21.3",
+    "should": "~4.0.4",
+    "sinon": "~1.10.3",
+    "supertest": "~0.13.0",
+    "proxyquire": "~1.7.4"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/dadi/status.git"
+  },
+  "bugs": {
+    "url": "https://github.com/dadi/status/issues"
+  },
+  "homepage": "https://github.com/dadi/status",
+  "author": "DADI <team@dadi.tech>",
+  "license": "SEE LICENSE IN GPL.md"
+}
