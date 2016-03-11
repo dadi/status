@@ -1,7 +1,5 @@
 # DADI Status
 
-![Build Status](http://img.shields.io/badge/Release-1.2.2-green.svg?style=flat-square)&nbsp;![Coverage](https://img.shields.io/badge/Coverage-89%-yellow.svg?style=flat-square)
-
 ## Overview
 
 It is part of DADI, a suite of components covering the full development stack, built for performance and scale.
