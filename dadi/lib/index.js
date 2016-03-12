@@ -5,8 +5,22 @@ var _ = require('underscore');
 var request = require('request');
 var async = require('async');
 
-var DadiStaus = function (params, next) {
+function secondsToString(seconds) {
+  var numdays = Math.floor(seconds / 86400);
+  var numhours = Math.floor((seconds % 86400) / 3600);
+  var numminutes = Math.floor(((seconds % 86400) % 3600) / 60);
+  var numseconds = Math.floor(((seconds % 86400) % 3600) % 60);
+  return numdays + " days " + numhours + " hours " + numminutes + " minutes " + numseconds + " seconds";
+};
+
+function bytesToSize(input, precision) {
   var unit = ['', 'K', 'M', 'G', 'T', 'P'];
+  var index = Math.floor(Math.log(input) / Math.log(1024));
+  if (unit >= unit.length) return input + ' B';
+  return (input / Math.pow(1024, index)).toFixed(precision) + ' ' + unit[index] + 'B';
+};
+
+module.exports = function (params, next) {
   var version = params.version, //Version of current package
       requestLink = params.requestLink,  //Request link to connect routes
       authorization = params.authorization, //Required authorization header to request
@@ -14,15 +28,8 @@ var DadiStaus = function (params, next) {
       healthTimeLimit = params.healthTimeLimit, //Time limit to receive data
       pkgName = params.pkgName;	// Package name to get the latest version.
   
-  //Return size with unit
-  var bytesToSize = function(input, precision) {
-    var index = Math.floor(Math.log(input) / Math.log(1024));
-    if (unit >= unit.length) return input + ' B';
-    return (input / Math.pow(1024, index)).toFixed(precision) + ' ' + unit[index] + 'B';
-  };
-
   if(pkgName && pkgName !== '') {
-    latestVersion(pkgName).then(function(result) {
+    latestVersion(pkgName).then(function(latestVersion) {
       var routesCallbacks = [];
       _.each(healthRoutes, function(route) {
         var start = new Date();
@@ -62,18 +69,38 @@ var DadiStaus = function (params, next) {
       async.parallel(routesCallbacks, function(err, health) {
         var usage = process.memoryUsage();
         var data = {
-          current_version: version,
-          memory_usage: {
+          service: {
+            name: pkgName,
+            versions: {
+              current: version,
+              latest: latestVersion
+            }
+          },
+          process: {
+            pid: process.pid,
+            uptime: process.uptime(),
+            uptimeFormatted: secondsToString(process.uptime()),
+            versions: process.versions
+          },
+          memory: {
             rss: bytesToSize(usage.rss, 3),
             heapTotal: bytesToSize(usage.heapTotal, 3),
             heapUsed: bytesToSize(usage.heapUsed, 3)
           },
-          uptime: process.uptime()+' seconds',
-          load_avg: os.loadavg(),
-          latest_version: result,
-          routes_health: health
+          system: {
+            platform: os.platform(),
+            release: os.release(),
+            hostname: os.hostname(),
+            memory: {
+              free: bytesToSize(os.freemem(), 3),
+              total: bytesToSize(os.totalmem(), 3)
+            },
+            load: os.loadavg(),
+            uptime: os.uptime(),
+            uptimeFormatted: secondsToString(os.uptime())
+          },
+          routes: health
         };
-        
         next(null, data);
       });
       
@@ -84,5 +111,3 @@ var DadiStaus = function (params, next) {
     next('Please pass package name to get latest version of that package.');
   }
 };
-
-module.exports = DadiStaus;
