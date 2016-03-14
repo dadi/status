@@ -25,7 +25,6 @@ module.exports = function (params, next) {
       requestLink = params.requestLink,  //Request link to connect routes
       authorization = params.authorization, //Required authorization header to request
       healthRoutes = params.healthRoutes || [], //Routes array to check health
-      healthTimeLimit = params.healthTimeLimit, //Time limit to receive data
       pkgName = params.pkgName;	// Package name to get the latest version.
   
   if(pkgName && pkgName !== '') {
@@ -35,7 +34,7 @@ module.exports = function (params, next) {
         var start = new Date();
         routesCallbacks.push(function(cb) {
           request({
-            url: requestLink + route, 
+            url: requestLink + route.route, 
             headers: {
               'Authorization': authorization
             }
@@ -43,18 +42,12 @@ module.exports = function (params, next) {
             var responseTime = (new Date() - start) / 1000;
             var usage = process.memoryUsage();
             var health = {
-              route: route,
-              pid: process.pid,
-              uptime: process.uptime()+' seconds',
-              memory: {
-                rss: bytesToSize(usage.rss, 3),
-                heapTotal: bytesToSize(usage.heapTotal, 3),
-                heapUsed: bytesToSize(usage.heapUsed, 3)
-              }
-            };
+              route: route.route,
+              responseTime: responseTime
+            }
             health.responseTime = responseTime;
             if (!err && response.statusCode == 200) {
-              if(responseTime < healthTimeLimit) {
+              if(responseTime < route.expectedResponseTime) {
                 health.healthStatus = 'Green';
               } else {
                 health.healthStatus = 'Amber';

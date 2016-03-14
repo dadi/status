@@ -13,8 +13,10 @@ var params = {
 	version: 'x.x.x',
 	requestLink: 'http://127.0.0.1:3000',
 	authorization: 'Bearer 123abcdef',
-	healthRoutes: [],
-	healthTimeLimit: 100,
+	healthRoutes: [{
+		route: '/xxx',
+		expectedResponseTime: 10
+	}],
 	pkgName: '@dadi/api'
 };
 dadiStatus(params, function(error, data) {

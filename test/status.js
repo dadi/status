@@ -9,9 +9,7 @@ describe('DADI Status', function () {
   });
 
   it('should raise error when package name is undefined', function (done) {
-    var params = {
-      healthTimeLimit: 200
-    };
+    var params = {};
 
     dadiStatus(params, function(error, result) {
       should.exist(error);
@@ -23,7 +21,6 @@ describe('DADI Status', function () {
     this.timeout(3000);
 
     var params = {
-      healthTimeLimit: 200,
       pkgName: '@dadi-api'
     };
 
@@ -37,7 +34,6 @@ describe('DADI Status', function () {
     this.timeout(5000);
 
     var params = {
-      healthTimeLimit: 200,
       pkgName: '@dadi/api'
     };
 
