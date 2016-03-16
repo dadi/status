@@ -9,7 +9,19 @@ describe('DADI Status', function () {
   });
 
   it('should raise error when package name is undefined', function (done) {
-    var params = {};
+
+    var params = {
+      site: 'dadi/status/test',
+      version: '1.0.0',
+      healthCheck: {
+        baseUrl: 'http://127.0.0.1:3001',
+        authorization: 'Bearer 123abcdef',
+        routes: [{
+          route: '/xxx',
+          expectedResponseTime: 10
+        }]
+      }
+    }
 
     dadiStatus(params, function(error, result) {
       should.exist(error);
@@ -21,8 +33,18 @@ describe('DADI Status', function () {
     this.timeout(3000);
 
     var params = {
-      pkgName: '@dadi-api'
-    };
+      site: 'dadi/status/test',
+      version: '1.0.0',
+      package: 'xxx',
+      healthCheck: {
+        baseUrl: 'http://127.0.0.1:3001',
+        authorization: 'Bearer 123abcdef',
+        routes: [{
+          route: '/xxx',
+          expectedResponseTime: 10
+        }]
+      }
+    }
 
     dadiStatus(params, function(error, result) {
         should.exist(error);
@@ -34,8 +56,15 @@ describe('DADI Status', function () {
     this.timeout(5000);
 
     var params = {
-      pkgName: '@dadi/api'
-    };
+      site: 'dadi/status/test',
+      version: '1.0.0',
+      package: '@dadi/web',
+      healthCheck: {
+        baseUrl: 'http://127.0.0.1:3001',
+        authorization: 'Bearer 123abcdef',
+        routes: []
+      }
+    }
 
     dadiStatus(params, function(error, result) {
         should.exist(result);
