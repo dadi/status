@@ -37,7 +37,8 @@ module.exports = function (params, next) {
           request({
             url: baseUrl + route.route,
             headers: {
-              'Authorization': authorization
+              'Authorization': authorization,
+              'User-Agent': '@dadi/status'
             }
           }, function(err, response, body) {
             var responseTime = (new Date() - start) / 1000;
@@ -67,7 +68,7 @@ module.exports = function (params, next) {
         var data = {
           service: {
             site: site,
-            name: pkgName,
+            package: pkgName,
             versions: {
               current: version,
               latest: latestVersion

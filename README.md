@@ -33,7 +33,23 @@ one and return data about the response:
   ]
 ```
 
+### User-Agent identifier
+
+DADI Status passes a User-Agent header to idenitify itself when making health check requests. The following header is used:
+
+```
+'User-Agent': '@dadi/status'
+```
+
 ## Usage
+
+### Install
+
+```
+npm install git+https://git@github.com/dadi/status.git --save
+```
+
+### Add a route
 
 ```js
 var dadiStatus = require('@dadi/status');
@@ -58,7 +74,6 @@ app.use('/api/status', function(req, res, next) {
     var resBody = JSON.stringify(data, null, 2);
 
     res.statusCode = 200;
-    res.setHeader('Server', config.get('server.name'));
     res.setHeader('Content-Type', 'application/json');
     res.setHeader('content-length', Buffer.byteLength(resBody));
     res.end(resBody);
@@ -66,12 +81,13 @@ app.use('/api/status', function(req, res, next) {
 });
 ```
 
-## Sample response
+### Sample response
 
 ```
 {
   "service": {
-    "name": "@dadi/web",
+    "site": "WC?",
+    "package": "@dadi/web",
     "versions": {
       "current": "1.1.2",
       "latest": "1.1.2"
