@@ -56,7 +56,7 @@ var dadiStatus = require('@dadi/status')
 
 app.use('/api/status', function(req, res, next) {
   var params = {
-    site: site,
+    site: "WC?",
     package: '@dadi/web',
     version: version,
     healthCheck: {
