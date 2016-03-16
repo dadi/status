@@ -66,6 +66,7 @@ module.exports = function (params, next) {
         var usage = process.memoryUsage();
         var data = {
           service: {
+            site: site,
             name: pkgName,
             versions: {
               current: version,
