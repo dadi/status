@@ -1,6 +1,9 @@
 {
   "name": "@dadi/status",
   "version": "1.0.0",
+  "scripts": {
+    "test": "./node_modules/.bin/_mocha test"
+  },
   "dependencies": {
     "async": "^1.4.2",
     "underscore": "~1.8.0",
