@@ -21,12 +21,13 @@ function bytesToSize(input, precision) {
 };
 
 module.exports = function (params, next) {
-  var version = params.version, //Version of current package
-      requestLink = params.requestLink,  //Request link to connect routes
-      authorization = params.authorization, //Required authorization header to request
-      healthRoutes = params.healthRoutes || [], //Routes array to check health
-      pkgName = params.pkgName;	// Package name to get the latest version.
-  
+  var pkgName = params.package;	// Package name to get the latest version.
+  var site = params.site; // The "name" property from the calling app's package.json, used as the website identifier
+  var version = params.version; //Version of current package
+  var baseUrl = params.healthCheck.baseUrl;  //Request link to connect routes
+  var authorization = params.healthCheck.authorization; //Required authorization header to request
+  var healthRoutes = params.healthCheck.routes || []; //Routes array to check health
+
   if(pkgName && pkgName !== '') {
     latestVersion(pkgName).then(function(latestVersion) {
       var routesCallbacks = [];
@@ -34,7 +35,7 @@ module.exports = function (params, next) {
         var start = new Date();
         routesCallbacks.push(function(cb) {
           request({
-            url: requestLink + route.route, 
+            url: requestLink + route.route,
             headers: {
               'Authorization': authorization
             }
@@ -43,11 +44,13 @@ module.exports = function (params, next) {
             var usage = process.memoryUsage();
             var health = {
               route: route.route,
+              status: response.statusCode,
+              expectedResponseTime: route.expectedResponseTime,
               responseTime: responseTime
             }
             health.responseTime = responseTime;
             if (!err && response.statusCode == 200) {
-              if(responseTime < route.expectedResponseTime) {
+              if (responseTime < route.expectedResponseTime) {
                 health.healthStatus = 'Green';
               } else {
                 health.healthStatus = 'Amber';
@@ -96,7 +99,7 @@ module.exports = function (params, next) {
         };
         next(null, data);
       });
-      
+
     }).catch(function (err) {
       next(err);
     });
