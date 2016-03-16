@@ -35,7 +35,7 @@ module.exports = function (params, next) {
         var start = new Date();
         routesCallbacks.push(function(cb) {
           request({
-            url: requestLink + route.route,
+            url: baseUrl + route.route,
             headers: {
               'Authorization': authorization
             }
