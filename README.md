@@ -52,33 +52,33 @@ npm install git+https://git@github.com/dadi/status.git --save
 ### Add a route
 
 ```js
-var dadiStatus = require('@dadi/status');
+var dadiStatus = require('@dadi/status')
 
 app.use('/api/status', function(req, res, next) {
   var params = {
-      site: site,
-      package: '@dadi/web',
-      version: version,
-      healthCheck: {
-        baseUrl: 'http://127.0.0.1:3001',
-        authorization: 'Bearer 123abcdef',
-        routes: [{
-            route: '/xxx',
-            expectedResponseTime: 10
-        }]
-      }
-  };
+    site: site,
+    package: '@dadi/web',
+    version: version,
+    healthCheck: {
+      baseUrl: 'http://127.0.0.1:3001',
+      authorization: 'Bearer 123abcdef',
+      routes: [{
+        route: '/movies/latest',
+        expectedResponseTime: 10
+      }]
+    }
+  }
 
   dadiStatus(params, function(err, data) {
-    if (err) return next(err);
-    var resBody = JSON.stringify(data, null, 2);
+    if (err) return next(err)
+    var resBody = JSON.stringify(data, null, 2)
 
-    res.statusCode = 200;
-    res.setHeader('Content-Type', 'application/json');
-    res.setHeader('content-length', Buffer.byteLength(resBody));
-    res.end(resBody);
-  });
-});
+    res.statusCode = 200
+    res.setHeader('Content-Type', 'application/json')
+    res.setHeader('content-length', Buffer.byteLength(resBody))
+    res.end(resBody)
+  })
+})
 ```
 
 ### Sample response
