@@ -1,70 +1,78 @@
-var url = require('url');
-var latestVersion = require('latest-version');
-var os = require('os');
-var _ = require('underscore');
-var request = require('request');
-var async = require('async');
+var async = require('async')
+var latestVersion = require('latest-version')
+var os = require('os')
+var request = require('request')
+var url = require('url')
+var _ = require('underscore')
 
-function secondsToString(seconds) {
-  var numdays = Math.floor(seconds / 86400);
-  var numhours = Math.floor((seconds % 86400) / 3600);
-  var numminutes = Math.floor(((seconds % 86400) % 3600) / 60);
-  var numseconds = Math.floor(((seconds % 86400) % 3600) % 60);
-  return numdays + " days " + numhours + " hours " + numminutes + " minutes " + numseconds + " seconds";
-};
+function secondsToString (seconds) {
+  var numdays = Math.floor(seconds / 86400)
+  var numhours = Math.floor((seconds % 86400) / 3600)
+  var numminutes = Math.floor(((seconds % 86400) % 3600) / 60)
+  var numseconds = Math.floor(((seconds % 86400) % 3600) % 60)
+  return numdays + ' days ' + numhours + ' hours ' + numminutes + ' minutes ' + numseconds + ' seconds'
+}
 
-function bytesToSize(input, precision) {
-  var unit = ['', 'K', 'M', 'G', 'T', 'P'];
-  var index = Math.floor(Math.log(input) / Math.log(1024));
-  if (unit >= unit.length) return input + ' B';
-  return (input / Math.pow(1024, index)).toFixed(precision) + ' ' + unit[index] + 'B';
-};
+function bytesToSize (input, precision) {
+  var unit = ['', 'K', 'M', 'G', 'T', 'P']
+  var index = Math.floor(Math.log(input) / Math.log(1024))
+  if (unit >= unit.length) return input + ' B'
+  return (input / Math.pow(1024, index)).toFixed(precision) + ' ' + unit[index] + 'B'
+}
 
 module.exports = function (params, next) {
-  var pkgName = params.package;	// Package name to get the latest version.
+  var pkgName = params.package; // Package name to get the latest version.
   var site = params.site; // The "name" property from the calling app's package.json, used as the website identifier
-  var version = params.version; //Version of current package
-  var baseUrl = params.healthCheck.baseUrl;  //Request link to connect routes
-  var authorization = params.healthCheck.authorization; //Required authorization header to request
-  var healthRoutes = params.healthCheck.routes || []; //Routes array to check health
+  var version = params.version // Version of current package
+  var baseUrl = params.healthCheck.baseUrl // Request link to connect routes
+  var authorization = params.healthCheck.authorization // Required authorization header to request
+  var healthRoutes = params.healthCheck.routes || [] // Routes array to check health
 
-  if(pkgName && pkgName !== '') {
-    latestVersion(pkgName).then(function(latestVersion) {
-      var routesCallbacks = [];
-      _.each(healthRoutes, function(route) {
-        var start = new Date();
-        routesCallbacks.push(function(cb) {
+  if (pkgName && pkgName !== '') {
+    latestVersion(pkgName).then(function (latestVersion) {
+      var routesCallbacks = []
+
+      _.each(healthRoutes, function (route) {
+        var start = new Date()
+
+        routesCallbacks.push(function (cb) {
           request({
             url: baseUrl + route.route,
             headers: {
               'Authorization': authorization,
               'User-Agent': '@dadi/status'
             }
-          }, function(err, response, body) {
-            var responseTime = (new Date() - start) / 1000;
-            var usage = process.memoryUsage();
+          }, function (err, response, body) {
+            var responseTime = (new Date() - start) / 1000
+            var usage = process.memoryUsage()
+
             var health = {
               route: route.route,
-              status: response.statusCode,
+              status: response ? response.statusCode : 'Unknown',
               expectedResponseTime: route.expectedResponseTime,
               responseTime: responseTime
             }
-            health.responseTime = responseTime;
+
+            health.responseTime = responseTime
+
             if (!err && response.statusCode == 200) {
               if (responseTime < route.expectedResponseTime) {
-                health.healthStatus = 'Green';
+                health.healthStatus = 'Green'
               } else {
-                health.healthStatus = 'Amber';
+                health.healthStatus = 'Amber'
               }
             } else {
-              health.healthStatus = 'Red';
+              health.healthStatus = 'Red'
             }
-            cb(err, health);
-          });
-        });
-      });
-      async.parallel(routesCallbacks, function(err, health) {
-        var usage = process.memoryUsage();
+
+            cb(err, health)
+          })
+        })
+      })
+
+      async.parallel(routesCallbacks, function (err, health) {
+        var usage = process.memoryUsage()
+
         var data = {
           service: {
             site: site,
@@ -98,14 +106,14 @@ module.exports = function (params, next) {
             uptimeFormatted: secondsToString(os.uptime())
           },
           routes: health
-        };
-        next(null, data);
-      });
+        }
 
+        next(null, data)
+      })
     }).catch(function (err) {
-      next(err);
-    });
+      next(err)
+    })
   } else {
-    next('Please pass package name to get latest version of that package.');
+    next('Please pass package name to get latest version of that package.')
   }
-};
+}

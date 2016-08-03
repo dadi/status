@@ -30,12 +30,12 @@ describe('DADI Status', function () {
   });
 
   it('should raise error when package name is invalid', function(done) {
-    this.timeout(3000);
+    this.timeout(6000);
 
     var params = {
       site: 'dadi/status/test',
       version: '1.0.0',
-      package: 'xxx',
+      package: 'thisshouldwellbeinvalid',
       healthCheck: {
         baseUrl: 'http://127.0.0.1:3001',
         authorization: 'Bearer 123abcdef',
