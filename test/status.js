@@ -1,15 +1,14 @@
-var should = require('should');
-var http = require('http');
-var dadiStatus = require(__dirname + '/../dadi/lib');
+var path = require('path')
+var should = require('should')
+var dadiStatus = require(path.join(__dirname, '/../dadi/lib'))
 
 describe('DADI Status', function () {
   it('should export function', function (done) {
-    dadiStatus.should.be.Function;
-    done();
-  });
+    dadiStatus.should.be.Function
+    done()
+  })
 
   it('should raise error when package name is undefined', function (done) {
-
     var params = {
       site: 'dadi/status/test',
       version: '1.0.0',
@@ -23,14 +22,14 @@ describe('DADI Status', function () {
       }
     }
 
-    dadiStatus(params, function(error, result) {
-      should.exist(error);
-      done();
-    });
-  });
+    dadiStatus(params, function (error, result) {
+      should.exist(error)
+      done()
+    })
+  })
 
-  it('should raise error when package name is invalid', function(done) {
-    this.timeout(6000);
+  it('should raise error when package name is invalid', function (done) {
+    this.timeout(6000)
 
     var params = {
       site: 'dadi/status/test',
@@ -46,14 +45,14 @@ describe('DADI Status', function () {
       }
     }
 
-    dadiStatus(params, function(error, result) {
-        should.exist(error);
-        done();
-    });
-  });
+    dadiStatus(params, function (error, result) {
+      should.exist(error)
+      done()
+    })
+  })
 
-  it('should return data when package name is valid', function(done) {
-    this.timeout(5000);
+  it('should return data when package name is valid', function (done) {
+    this.timeout(5000)
 
     var params = {
       site: 'dadi/status/test',
@@ -66,9 +65,9 @@ describe('DADI Status', function () {
       }
     }
 
-    dadiStatus(params, function(error, result) {
-        should.exist(result);
-        done();
-    });
-  });
-});
+    dadiStatus(params, function (error, result) {
+      should.exist(result)
+      done()
+    })
+  })
+})

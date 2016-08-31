@@ -2,7 +2,6 @@ var async = require('async')
 var latestVersion = require('latest-version')
 var os = require('os')
 var request = require('request')
-var url = require('url')
 var _ = require('underscore')
 
 function secondsToString (seconds) {
@@ -21,8 +20,8 @@ function bytesToSize (input, precision) {
 }
 
 module.exports = function (params, next) {
-  var pkgName = params.package; // Package name to get the latest version.
-  var site = params.site; // The "name" property from the calling app's package.json, used as the website identifier
+  var pkgName = params.package // Package name to get the latest version.
+  var site = params.site // The "name" property from the calling app's package.json, used as the website identifier
   var version = params.version // Version of current package
   var baseUrl = params.healthCheck.baseUrl // Request link to connect routes
   var authorization = params.healthCheck.authorization // Required authorization header to request
@@ -44,7 +43,6 @@ module.exports = function (params, next) {
             }
           }, function (err, response, body) {
             var responseTime = (new Date() - start) / 1000
-            var usage = process.memoryUsage()
 
             var health = {
               route: route.route,
@@ -55,7 +53,7 @@ module.exports = function (params, next) {
 
             health.responseTime = responseTime
 
-            if (!err && response.statusCode == 200) {
+            if (!err && response.statusCode === 200) {
               if (responseTime < route.expectedResponseTime) {
                 health.healthStatus = 'Green'
               } else {
@@ -71,6 +69,8 @@ module.exports = function (params, next) {
       })
 
       async.parallel(routesCallbacks, function (err, health) {
+        if (err) return next(err)
+
         var usage = process.memoryUsage()
 
         var data = {

@@ -1,5 +1,10 @@
 # DADI Status
 
+[![npm (scoped)](https://img.shields.io/npm/v/@dadi/status.svg?maxAge=10800&style=flat-square)](https://www.npmjs.com/package/@dadi/status)
+[![coverage](https://img.shields.io/badge/coverage-59%25-red.svg?style=flat-square)](https://github.com/dadi/status)
+[![build](http://ci.dadi.technology/dadi/status/badge?branch=master&service=shield)](http://ci.dadi.technology/dadi/status)
+[![JavaScript Style Guide](https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat-square)](http://standardjs.com/)
+
 ## Overview
 
 DADI Status returns a JSON object containing information about an application's platform, process and health state.
