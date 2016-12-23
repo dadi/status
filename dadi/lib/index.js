@@ -1,8 +1,8 @@
+var _ = require('underscore')
 var async = require('async')
 var latestVersion = require('latest-version')
 var os = require('os')
 var request = require('request')
-var _ = require('underscore')
 
 function secondsToString (seconds) {
   var numdays = Math.floor(seconds / 86400)
@@ -15,6 +15,7 @@ function secondsToString (seconds) {
 function bytesToSize (input, precision) {
   var unit = ['', 'K', 'M', 'G', 'T', 'P']
   var index = Math.floor(Math.log(input) / Math.log(1024))
+  /* istanbul ignore if */
   if (unit >= unit.length) return input + ' B'
   return (input / Math.pow(1024, index)).toFixed(precision) + ' ' + unit[index] + 'B'
 }
@@ -28,20 +29,20 @@ module.exports = function (params, next) {
   var healthRoutes = params.healthCheck.routes || [] // Routes array to check health
 
   if (pkgName && pkgName !== '') {
-    latestVersion(pkgName).then(function (latestVersion) {
+    latestVersion(pkgName).then((latestVersion) => {
       var routesCallbacks = []
 
-      _.each(healthRoutes, function (route) {
+      _.each(healthRoutes, (route) => {
         var start = new Date()
 
-        routesCallbacks.push(function (cb) {
+        routesCallbacks.push((cb) => {
           request({
             url: baseUrl + route.route,
             headers: {
               'Authorization': authorization,
               'User-Agent': '@dadi/status'
             }
-          }, function (err, response, body) {
+          }, (err, response, body) => {
             var responseTime = (new Date() - start) / 1000
 
             var health = {
@@ -68,7 +69,7 @@ module.exports = function (params, next) {
         })
       })
 
-      async.parallel(routesCallbacks, function (err, health) {
+      async.parallel(routesCallbacks, (err, health) => {
         if (err) return next(err)
 
         var usage = process.memoryUsage()
@@ -110,7 +111,7 @@ module.exports = function (params, next) {
 
         next(null, data)
       })
-    }).catch(function (err) {
+    }).catch((err) => {
       next(err)
     })
   } else {
