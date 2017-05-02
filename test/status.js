@@ -4,7 +4,7 @@ var should = require('should')
 var dadiStatus = require(path.join(__dirname, '/../dadi/lib'))
 
 describe('DADI Status', function () {
-  this.timeout(8000)
+  this.timeout(15000)
 
   it('should export function', function (done) {
     dadiStatus.should.be.Function
@@ -47,7 +47,9 @@ describe('DADI Status', function () {
     }
 
     dadiStatus(params, function (error, result) {
-      should.exist(error)
+      should.exist(result.errors)
+      result.errors.should.be.Array
+      result.errors.length.should.be.above(0)
       done()
     })
   })
@@ -165,8 +167,10 @@ describe('DADI Status', function () {
         .replyWithError({'message': 'something awful happened', 'code': 'AWFUL_ERROR'})
 
       dadiStatus(params, (err, result) => {
-        should.exist(err)
-        err.code.should.eql('AWFUL_ERROR')
+        should.exist(result.errors)
+        result.errors.should.be.Array
+        result.errors.length.should.be.above(0)
+        result.errors[0].code.should.eql('AWFUL_ERROR')
         done()
       })
     })
