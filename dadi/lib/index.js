@@ -29,90 +29,98 @@ module.exports = function (params, next) {
   var healthRoutes = params.healthCheck.routes || [] // Routes array to check health
 
   if (pkgName && pkgName !== '') {
-    latestVersion(pkgName).then((latestVersion) => {
-      var routesCallbacks = []
+    var routesCallbacks = []
 
-      _.each(healthRoutes, (route) => {
-        var start = new Date()
+    _.each(healthRoutes, (route) => {
+      var start = new Date()
 
-        routesCallbacks.push((cb) => {
-          request({
-            url: baseUrl + route.route,
-            headers: {
-              'Authorization': authorization,
-              'User-Agent': '@dadi/status'
-            }
-          }, (err, response, body) => {
-            var responseTime = (new Date() - start) / 1000
+      routesCallbacks.push((cb) => {
+        request({
+          url: baseUrl + route.route,
+          headers: {
+            'Authorization': authorization,
+            'User-Agent': '@dadi/status'
+          }
+        }, (err, response, body) => {
+          var responseTime = (new Date() - start) / 1000
 
-            var health = {
-              route: route.route,
-              status: response ? response.statusCode : 'Unknown',
-              expectedResponseTime: route.expectedResponseTime,
-              responseTime: responseTime
-            }
+          var health = {
+            route: route.route,
+            status: response ? response.statusCode : 'Unknown',
+            expectedResponseTime: route.expectedResponseTime,
+            responseTime: responseTime
+          }
 
-            health.responseTime = responseTime
+          health.responseTime = responseTime
 
-            if (!err && response.statusCode === 200) {
-              if (responseTime < route.expectedResponseTime) {
-                health.healthStatus = 'Green'
-              } else {
-                health.healthStatus = 'Amber'
-              }
+          if (!err && response.statusCode === 200) {
+            if (responseTime < route.expectedResponseTime) {
+              health.healthStatus = 'Green'
             } else {
-              health.healthStatus = 'Red'
+              health.healthStatus = 'Amber'
             }
+          } else {
+            health.healthStatus = 'Red'
+          }
 
-            cb(err, health)
-          })
+          cb(err, health)
         })
       })
+    })
 
-      async.parallel(routesCallbacks, (err, health) => {
-        if (err) return next(err)
+    async.parallel(routesCallbacks, (err, health) => {
+      var usage = process.memoryUsage()
 
-        var usage = process.memoryUsage()
-
-        var data = {
-          service: {
-            site: site,
-            package: pkgName,
-            versions: {
-              current: version,
-              latest: latestVersion
-            }
-          },
-          process: {
-            pid: process.pid,
-            uptime: process.uptime(),
-            uptimeFormatted: secondsToString(process.uptime()),
-            versions: process.versions
-          },
+      var data = {
+        service: {
+          site: site,
+          package: pkgName,
+          versions: {
+            current: version
+          }
+        },
+        process: {
+          pid: process.pid,
+          uptime: process.uptime(),
+          uptimeFormatted: secondsToString(process.uptime()),
+          versions: process.versions
+        },
+        memory: {
+          rss: bytesToSize(usage.rss, 3),
+          heapTotal: bytesToSize(usage.heapTotal, 3),
+          heapUsed: bytesToSize(usage.heapUsed, 3)
+        },
+        system: {
+          platform: os.platform(),
+          release: os.release(),
+          hostname: os.hostname(),
           memory: {
-            rss: bytesToSize(usage.rss, 3),
-            heapTotal: bytesToSize(usage.heapTotal, 3),
-            heapUsed: bytesToSize(usage.heapUsed, 3)
+            free: bytesToSize(os.freemem(), 3),
+            total: bytesToSize(os.totalmem(), 3)
           },
-          system: {
-            platform: os.platform(),
-            release: os.release(),
-            hostname: os.hostname(),
-            memory: {
-              free: bytesToSize(os.freemem(), 3),
-              total: bytesToSize(os.totalmem(), 3)
-            },
-            load: os.loadavg(),
-            uptime: os.uptime(),
-            uptimeFormatted: secondsToString(os.uptime())
-          },
-          routes: health
-        }
+          load: os.loadavg(),
+          uptime: os.uptime(),
+          uptimeFormatted: secondsToString(os.uptime())
+        },
+        routes: health
+      }
+
+      if (err) {
+        data.errors = data.errors || []
+        data.errors.push(err)
+      }
+
+      latestVersion(pkgName).then((latestVersion) => {
+        data.service.versions.latest = latestVersion
+        next(null, data)
+      }).catch((err) => {
+        data.service.versions.latest = '0'
+
+        data.errors = data.errors || []
+        data.errors.push(err)
 
         next(null, data)
       })
-    }).catch((err) => {
-      next(err)
     })
   } else {
     next('Please pass package name to get latest version of that package.')
