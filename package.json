@@ -11,21 +11,20 @@
     "async": "^1.4.2",
     "latest-version": "~2.0.0",
     "request": "2.x.x",
-    "underscore": "~1.8.0",
     "underscore.string": "^3.2.2"
   },
   "devDependencies": {
+    "coveralls": "^3.0.2",
     "env-test": "^1.0.0",
-    "istanbul": "^0.3.22",
-    "istanbul-cobertura-badger": "^1.1.0",
-    "mocha": "~1.21.3",
+    "istanbul": "^0.4.5",
+    "mocha": "^5.2.0",
     "nock": "^9.0.2",
     "proxyquire": "~1.7.4",
+    "semantic-release": "^15.12.1",
     "should": "~4.0.4",
     "sinon": "~1.10.3",
     "standard": "8.0.0",
-    "supertest": "~0.13.0",
-    "semantic-release": "^6.3.2"
+    "supertest": "^3.3.0"
   },
   "repository": {
     "type": "git",
