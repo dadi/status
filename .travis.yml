@@ -5,9 +5,8 @@ cache:
 notifications:
   email: false
 node_js:
-  - '6'
-  - '5'
-  - '4'
+  - '10'
+  - '8'
 before_script:
   - npm prune
 after_success:
@@ -23,4 +22,3 @@ addons:
       - ubuntu-toolchain-r-test
     packages:
       - g++-4.8
-before_install: if [[ `npm -v` != 3* ]]; then npm i -g npm@3; fi
